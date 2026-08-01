@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase, ARTWORKS_BUCKET } from "@/lib/supabase";
 import type { SkillLevel, CritiquePin } from "@/lib/scoring";
+import type { Json } from "@/integrations/supabase/types";
+
+const SIGNED_URL_TTL = 60 * 60 * 24 * 7;
+
+async function withSignedUrl(row: PortfolioEntry): Promise<PortfolioEntry> {
+  const { data } = await supabase.storage
+    .from(ARTWORKS_BUCKET)
+    .createSignedUrl(row.image_path, SIGNED_URL_TTL);
+  return data?.signedUrl ? { ...row, image_url: data.signedUrl } : row;
+}
 
 export interface PortfolioEntry {
   id: string;
@@ -43,7 +53,8 @@ export function usePortfolio() {
         .select("*")
         .order("created_at", { ascending: false });
       if (fetchError) throw fetchError;
-      setEntries((data as PortfolioEntry[]) ?? []);
+      const rows = (data ?? []) as unknown as PortfolioEntry[];
+      setEntries(await Promise.all(rows.map(withSignedUrl)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load portfolio");
     } finally {
@@ -66,19 +77,19 @@ export function usePortfolio() {
           .upload(filePath, entry.file, { cacheControl: "3600", upsert: false });
         if (uploadError) throw uploadError;
 
-        const { data: urlData } = supabase.storage
+        const { data: urlData } = await supabase.storage
           .from(ARTWORKS_BUCKET)
-          .getPublicUrl(filePath);
+          .createSignedUrl(filePath, SIGNED_URL_TTL);
 
         const { data, error: insertError } = await supabase
           .from("portfolio_entries")
           .insert({
-            image_url: urlData.publicUrl,
+            image_url: urlData?.signedUrl ?? "",
             image_path: filePath,
             skill_level: entry.skillLevel,
             tokens_earned: entry.tokensEarned,
             feedback: entry.feedback,
-            critique_pins: entry.critiquePins,
+            critique_pins: entry.critiquePins as unknown as Json,
             medium: entry.medium,
             medium_match: entry.mediumMatch,
             is_analog: entry.isAnalog,
@@ -89,7 +100,7 @@ export function usePortfolio() {
 
         if (insertError) throw insertError;
 
-        const newEntry = data as PortfolioEntry;
+        const newEntry = data as unknown as PortfolioEntry;
         setEntries((prev) => [newEntry, ...prev]);
         return newEntry;
       } catch (err) {
