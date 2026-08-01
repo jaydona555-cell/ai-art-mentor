@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, MessageCircle, Coins, Loader2 } from "lucide-react";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 
+const ANALYZE_ENDPOINT = "/api/analyze-artwork";
+
 interface FollowupChatProps {
   artworkContext: string | null;
   onTokensEarned: (amount: number, reason: string) => void;
