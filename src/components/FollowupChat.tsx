@@ -38,7 +38,7 @@ export default function FollowupChat({ artworkContext, onTokensEarned, onQuestio
     if (onQuestionAsked) onQuestionAsked();
 
     try {
-      const response = await fetch(`${apiBase}/functions/v1/analyze-artwork`, {
+      const response = await fetch(ANALYZE_ENDPOINT, {
         method: "POST",
         headers: {
           "apikey": apiKey,

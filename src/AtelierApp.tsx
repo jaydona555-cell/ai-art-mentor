@@ -84,8 +84,9 @@ const INITIAL_MASTERPIECE: MasterpieceState = {
   error: null,
 };
 
-const API_URL = import.meta.env.VITE_SUPABASE_URL;
-const API_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const ANALYZE_ENDPOINT = "/api/analyze-artwork";
+const API_URL = "";
+const API_KEY = "";
 
 function AppContent() {
   const { tokens, unlocks, addTokens, subtractTokens, activeBackground, purchasedBackgrounds } = useReward();
@@ -156,11 +157,11 @@ function AppContent() {
         const base64 = (reader.result as string).split(",")[1];
         setLastImageBase64(base64);
         try {
-          const apiUrl = `${API_URL}/functions/v1/analyze-artwork`;
+          const apiUrl = ANALYZE_ENDPOINT;
           const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
-              "apikey": API_KEY,
+              
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -293,9 +294,9 @@ function AppContent() {
       // Step 1: Analyze the last uploaded image's style
       let styleDescription = "a beautiful artistic masterpiece";
       if (lastImageBase64) {
-        const styleRes = await fetch(`${API_URL}/functions/v1/analyze-artwork`, {
+        const styleRes = await fetch(ANALYZE_ENDPOINT, {
           method: "POST",
-          headers: { "apikey": API_KEY, "Content-Type": "application/json" },
+          headers: {  "Content-Type": "application/json" },
           body: JSON.stringify({ mode: "analyze-style", imageBase64: lastImageBase64 }),
         });
         const styleData = await styleRes.json().catch(() => null);
@@ -305,9 +306,9 @@ function AppContent() {
       }
 
       // Step 2: Generate the masterpiece
-      const genRes = await fetch(`${API_URL}/functions/v1/analyze-artwork`, {
+      const genRes = await fetch(ANALYZE_ENDPOINT, {
         method: "POST",
-        headers: { "apikey": API_KEY, "Content-Type": "application/json" },
+        headers: {  "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "generate-masterpiece", styleDescription }),
       });
       const genData = await genRes.json().catch(() => null);
