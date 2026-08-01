@@ -242,3 +242,4 @@ export function parseAnalysisResponse(raw: string): ScoringMetadata & { critique
   } catch {
     return null;
   }
+}
