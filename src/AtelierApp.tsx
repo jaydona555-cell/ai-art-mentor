@@ -808,6 +808,9 @@ function AppContent() {
         />
       </AnimatePresence>
 
+      <WorkspacePanel open={workspaceOpen} onClose={() => setWorkspaceOpen(false)} />
+
+
       <StickerCanvas
         open={stickerCanvasOpen}
         onClose={() => setStickerCanvasOpen(false)}
