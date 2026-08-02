@@ -2,8 +2,31 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 export type StickerPack = "starter" | "nature" | "cosmic";
 export type ThemeName = "blossom" | "ocean";
-export type ShopBackground = "greek-mythology" | "chinese-art";
-export type ShopItem = "generate-masterpiece";
+export type ShopBackground =
+  | "greek-mythology"
+  | "chinese-art"
+  | "renaissance-atelier"
+  | "ukiyo-e"
+  | "art-deco"
+  | "cosmic-observatory";
+export type ShopItem =
+  | "generate-masterpiece"
+  | "frame-gold"
+  | "frame-baroque"
+  | "frame-minimal"
+  | "ambient-sounds"
+  | "critique-spotlight"
+  | "extra-critique"
+  | "colour-analysis"
+  | "composition-grid"
+  | "master-study-plan"
+  | "palette-generator"
+  | "portfolio-export"
+  | "streak-freeze"
+  | "sticker-pack-botanical"
+  | "sticker-pack-celestial"
+  | "narrator-voice";
+
 
 export interface UnlockState {
   stickerPacks: Record<StickerPack, boolean>;
