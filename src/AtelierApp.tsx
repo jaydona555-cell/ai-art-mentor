@@ -756,7 +756,10 @@ function AppContent() {
                     artworkContext={analysis.feedback}
                     onTokensEarned={addTokens}
                     onQuestionAsked={recordFollowup}
+                    artworkBase64={imagePayload?.base64 ?? lastImageBase64}
+                    artworkMimeType={imagePayload?.mimeType ?? "image/png"}
                   />
+
 
                 </motion.div>
               )}
@@ -847,7 +850,9 @@ export default function App() {
             <AchievementProvider>
               <RewardProvider>
                 <StickerPlacementProvider>
-                  <AppContent />
+                  <WorkspaceProvider>
+                    <AppContent />
+                  </WorkspaceProvider>
                 </StickerPlacementProvider>
               </RewardProvider>
             </AchievementProvider>
@@ -855,5 +860,6 @@ export default function App() {
         </AccessibilityProvider>
       </MediumProvider>
     </SeasonProvider>
+
   );
 }
