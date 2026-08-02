@@ -188,27 +188,65 @@ async function handlePost({ request }: { request: Request }) {
     }
     systemPrompt += OUTPUT_FORMAT;
 
-    const analysis = await callGateway({
-      model: TEXT_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        imageMessage(
-          imageBase64,
-          mimeType,
-          "Please analyze my artwork and respond with only the JSON object.",
-        ),
-      ],
-      response_format: { type: "json_object" },
-    });
-    if (!analysis.ok) return json({ error: analysis.message }, analysis.status);
+    const analysisMessages: ChatMessage[] = [
+      { role: "system", content: systemPrompt },
+      imageMessage(
+        imageBase64,
+        mimeType,
+        "Please analyze my artwork and respond with only the JSON object.",
+      ),
+    ];
 
-    const parsed = parseAnalysisResponse(textOf(analysis.data));
+    let rawText = "";
+    let parsed: ReturnType<typeof parseAnalysisResponse> = null;
+
+    // The model occasionally returns malformed or truncated JSON — retry once before giving up.
+    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
+      const analysis = await callGateway({
+        model: TEXT_MODEL,
+        messages: analysisMessages,
+        response_format: { type: "json_object" },
+        max_tokens: 4000,
+      });
+      if (!analysis.ok) return json({ error: analysis.message }, analysis.status);
+
+      rawText = textOf(analysis.data);
+      parsed = parseAnalysisResponse(rawText);
+      if (!parsed) {
+        console.error(
+          `[analyze-artwork] parse failure (attempt ${attempt + 1}). finish_reason=${analysis.data?.choices?.[0]?.finish_reason} raw=${rawText.slice(0, 1000)}`,
+        );
+      }
+    }
+
     if (!parsed) {
+      // Last resort: salvage whatever prose the model produced so the student still gets feedback.
+      const salvaged = rawText
+        .replace(/```(?:json)?/gi, "")
+        .replace(/^[\s\S]*?"critiqueText"\s*:\s*"/, "")
+        .replace(/",?\s*"(?:skillLevel|critiquePins|mediumMatch|isAnalog|experimentationLevel)[\s\S]*$/, "")
+        .replace(/\\n/g, "\n")
+        .replace(/\\"/g, '"')
+        .trim();
+
+      if (salvaged.length > 120) {
+        return json({
+          aiDetected: false,
+          feedback: salvaged,
+          skillLevel: "beginner",
+          mediumMatch: false,
+          isAnalog: false,
+          experimentationLevel: "low",
+          critiquePins: [],
+        });
+      }
+
       return json(
         { error: "The AI response could not be parsed. Please try uploading your artwork again." },
         502,
       );
     }
+
 
     return json({
       aiDetected: false,
