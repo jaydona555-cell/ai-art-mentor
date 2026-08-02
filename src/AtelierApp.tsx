@@ -427,6 +427,21 @@ function AppContent() {
                 <span className="hidden sm:inline">Stickers</span>
               </button>
               <button
+                onClick={() => setWorkspaceOpen(true)}
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3.5 py-2 transition-all ${
+                  isWinter
+                    ? "bg-white/20 text-cream hover:bg-white/30"
+                    : "bg-white/60 text-deep-earth hover:bg-white/80 border border-sand/40"
+                }`}
+                aria-label="Open notepad and sketchpad"
+              >
+                <NotebookPen size={14} />
+                <span className="hidden sm:inline">Workspace</span>
+                {mounted && hasWorkspaceContent && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-amber" />
+                )}
+              </button>
+              <button
                 onClick={() => setShopOpen(true)}
                 className="inline-flex items-center gap-1.5 bg-gradient-to-r from-accent-amber to-accent-coral text-white text-xs font-semibold rounded-full px-3.5 py-2 shadow-card-soft hover:shadow-glow-amber transition-all"
                 aria-label="Open token shop"
@@ -434,6 +449,7 @@ function AppContent() {
                 <Store size={14} />
                 <span className="hidden sm:inline">Shop</span>
               </button>
+
               <TokenHud />
               <StreakTracker />
             </div>
