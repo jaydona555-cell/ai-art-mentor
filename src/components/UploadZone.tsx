@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Upload, ImageIcon, X } from "lucide-react";
+import { Upload, ImageIcon, X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ACCEPTED_IMAGE_TYPES, isImageFile, downloadDataUrl } from "@/lib/image-utils";
 
 interface UploadZoneProps {
   onImageSelected: (file: File) => void;
@@ -11,11 +12,16 @@ interface UploadZoneProps {
 
 export default function UploadZone({ onImageSelected, preview, onClear, disabled }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [formatError, setFormatError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(
     (file: File) => {
-      if (!file.type.startsWith("image/")) return;
+      if (!isImageFile(file)) {
+        setFormatError("That file isn't an image. Try PNG, JPG, GIF, WEBP, SVG, BMP, TIFF, AVIF or HEIC.");
+        return;
+      }
+      setFormatError(null);
       onImageSelected(file);
     },
     [onImageSelected]
@@ -70,17 +76,24 @@ export default function UploadZone({ onImageSelected, preview, onClear, disabled
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           />
-          {!disabled && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              onClick={onClear}
-              className="absolute top-3 right-3 bg-gradient-to-r from-accent-rose to-accent-rose-light text-white hover:from-accent-rose-deep rounded-full p-2 shadow-glow-rose transition-all duration-200"
-              aria-label="Remove image"
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            <button
+              onClick={() => downloadDataUrl(preview, "download.png")}
+              className="bg-white/85 hover:bg-white text-deep-earth rounded-full p-2 shadow-card-soft transition-all"
+              aria-label="Download image"
             >
-              <X size={18} />
-            </motion.button>
-          )}
+              <Download size={16} />
+            </button>
+            {!disabled && (
+              <button
+                onClick={onClear}
+                className="bg-gradient-to-r from-accent-rose to-accent-rose-light text-white hover:from-accent-rose-deep rounded-full p-2 shadow-glow-rose transition-all duration-200"
+                aria-label="Remove image"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
         </motion.div>
       ) : (
         <motion.div
@@ -103,7 +116,7 @@ export default function UploadZone({ onImageSelected, preview, onClear, disabled
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+            accept={ACCEPTED_IMAGE_TYPES}
             className="hidden"
             onChange={handleChange}
             disabled={disabled}
@@ -132,7 +145,10 @@ export default function UploadZone({ onImageSelected, preview, onClear, disabled
             <p className="text-muted-brown text-sm">
               or <span className="text-accent-amber-deep font-medium underline underline-offset-2">browse to upload</span>
             </p>
-            <p className="text-warm-taupe/70 text-xs mt-3">Supports JPG, PNG, WEBP, GIF</p>
+            <p className="text-warm-taupe/70 text-xs mt-3">
+              Supports PNG, JPG, GIF, WEBP, SVG, BMP, TIFF, AVIF & HEIC
+            </p>
+            {formatError && <p className="text-accent-rose text-xs mt-2">{formatError}</p>}
           </div>
         </motion.div>
       )}
