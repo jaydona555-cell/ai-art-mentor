@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Palette, Sparkles, AlertCircle, RotateCcw, Coins, ShieldAlert, Award, Store, FlaskConical, Hand, GalleryHorizontalEnd, ImagePlus, Accessibility, Trophy, Brain, Focus, Layers, Sticker as StickerIcon } from "lucide-react";
+import { Palette, Sparkles, AlertCircle, RotateCcw, Coins, ShieldAlert, Award, Store, FlaskConical, Hand, GalleryHorizontalEnd, ImagePlus, Accessibility, Trophy, Brain, Focus, Layers, Sticker as StickerIcon, NotebookPen } from "lucide-react";
+
 import UploadZone from "@/components/UploadZone";
 import LoadingAnalysis from "@/components/LoadingAnalysis";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
@@ -34,7 +35,11 @@ import { MediumProvider, useMedium, MEDIUM_API_VALUES } from "@/context/MediumCo
 import { AccessibilityProvider, useAccessibility } from "@/context/AccessibilityContext";
 import { AchievementProvider, useAchievements, streakBonusTokens } from "@/context/AchievementContext";
 import { LearningProfileProvider, useLearningProfile, buildProfilePromptString } from "@/context/LearningProfileContext";
+import { WorkspaceProvider, useWorkspace } from "@/context/WorkspaceContext";
+import WorkspacePanel from "@/components/WorkspacePanel";
 import { usePortfolio } from "@/hooks/usePortfolio";
+import { postAnalyze } from "@/lib/api-client";
+import { normalizeImage } from "@/lib/image-utils";
 import {
   calculateTokens,
   AI_PENALTY,
@@ -43,6 +48,7 @@ import {
   type SkillLevel,
   type CritiquePin,
 } from "@/lib/scoring";
+
 
 interface AnalysisState {
   loading: boolean;
