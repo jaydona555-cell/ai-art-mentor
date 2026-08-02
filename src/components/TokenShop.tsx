@@ -401,8 +401,32 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
           </div>
         </div>
 
+        {/* Search + Sort */}
+        <div className="px-6 pt-4 flex flex-wrap items-center gap-2">
+          <div className="flex-1 min-w-[180px] flex items-center gap-2 bg-white/70 border border-sand/50 rounded-full px-3 py-1.5">
+            <Search size={14} className="text-muted-brown" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search the shop..."
+              className="flex-1 bg-transparent text-sm text-deep-earth placeholder:text-warm-taupe/60 outline-none"
+              aria-label="Search shop items"
+            />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className="bg-white/70 border border-sand/50 rounded-full px-3 py-1.5 text-xs font-semibold text-muted-brown outline-none"
+            aria-label="Sort shop items"
+          >
+            <option value="default">Featured</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+          </select>
+        </div>
+
         {/* Category Tabs */}
-        <div className="flex gap-2 px-6 pt-4 pb-2 border-b border-sand/30">
+        <div className="flex flex-wrap gap-2 px-6 pt-3 pb-2 border-b border-sand/30">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
@@ -416,7 +440,11 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
               {cat.label}
             </button>
           ))}
+          <span className="ml-auto self-center text-[11px] text-muted-brown">
+            {filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}
+          </span>
         </div>
+
 
         {/* Items */}
         <div className="overflow-y-auto scroll-warm p-6 space-y-3">
