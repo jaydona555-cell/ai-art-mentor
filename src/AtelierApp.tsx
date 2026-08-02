@@ -90,10 +90,6 @@ const INITIAL_MASTERPIECE: MasterpieceState = {
   error: null,
 };
 
-const ANALYZE_ENDPOINT = "/api/analyze-artwork";
-const API_URL = "";
-const API_KEY = "";
-
 function AppContent() {
   const { tokens, unlocks, addTokens, subtractTokens, activeBackground, purchasedBackgrounds } = useReward();
   const { season } = useSeason();
@@ -102,18 +98,25 @@ function AppContent() {
   const { sensoryMode, fontSize, fontFamily, contrast } = useAccessibility();
   const { recordUpload, recordFollowup, pendingStreakMilestone, clearPendingStreakMilestone } = useAchievements();
   const learningProfile = useLearningProfile();
+  const { notes, hasWorkspaceContent } = useWorkspace();
   const { surveyCompleted } = learningProfile;
   const [view, setView] = useState<"studio" | "gallery">("studio");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisState>(INITIAL_STATE);
   const [shopOpen, setShopOpen] = useState(false);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [stickerCanvasOpen, setStickerCanvasOpen] = useState(false);
   const [masterpiece, setMasterpiece] = useState<MasterpieceState>(INITIAL_MASTERPIECE);
   const [lastImageBase64, setLastImageBase64] = useState<string | null>(null);
+  const [imagePayload, setImagePayload] = useState<{ base64: string; mimeType: string } | null>(null);
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
   const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
 
   // Auto-open survey on first visit
   useEffect(() => {
