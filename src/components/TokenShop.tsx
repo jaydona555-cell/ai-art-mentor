@@ -343,7 +343,14 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
     onGenerateMasterpiece();
   };
 
-  const filteredItems = category === "all" ? SHOP_ITEMS : SHOP_ITEMS.filter((i) => i.category === category);
+  const q = query.trim().toLowerCase();
+  const filteredItems = SHOP_ITEMS
+    .filter((i) => (category === "all" ? true : i.category === category))
+    .filter((i) => (q ? `${i.name} ${i.description}`.toLowerCase().includes(q) : true))
+    .sort((a, b) =>
+      sort === "price-asc" ? a.cost - b.cost : sort === "price-desc" ? b.cost - a.cost : 0,
+    );
+
 
   if (!open) return null;
 
