@@ -756,9 +756,8 @@ function AppContent() {
                     artworkContext={analysis.feedback}
                     onTokensEarned={addTokens}
                     onQuestionAsked={recordFollowup}
-                    apiBase={API_URL}
-                    apiKey={API_KEY}
                   />
+
                 </motion.div>
               )}
             </AnimatePresence>
