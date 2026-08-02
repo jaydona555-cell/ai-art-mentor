@@ -168,7 +168,8 @@ async function handlePost({ request }: { request: Request }) {
       if (match) {
         try {
           const parsed = JSON.parse(match[0]);
-          if (parsed.aiGenerated === true && parsed.confidence !== "low") {
+          // Only reject if there is high confidence AND concrete evidence
+          if (parsed.aiGenerated === true && parsed.confidence === "high" && parsed.reason?.length > 10) {
             return json({ aiDetected: true, feedback: null });
           }
         } catch {
