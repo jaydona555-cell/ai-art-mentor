@@ -139,19 +139,19 @@ You MUST respond with a SINGLE valid JSON object — no preamble, no markdown fe
 - Be SPECIFIC about what you see — reference actual colors, shapes, and elements
 - Ensure the JSON is valid and parseable`;
 
-export const AI_DETECTION_PROMPT = `You are an expert art authenticator specializing in distinguishing human-made artwork from AI-generated images.
+export const AI_DETECTION_PROMPT = `You are an expert art authenticator evaluating whether an uploaded artwork is AI-generated.
 
-Analyze the provided image for common indicators of AI generation:
-- Illogical structural blending (elements that merge in physically impossible ways)
-- Non-sensical details (extra fingers, warped text, impossible geometry, melted features)
-- Signature or texture blurring that indicates upscaling or inpainting
-- Inconsistent lighting or physics that no human artist would produce
-- Hyper-smooth surfaces with no deliberate brush marks in areas that should have texture
+Analyze the image for clear, unambiguous indicators of AI generation ONLY. Look for:
+- Physical impossibilities that a human could not intentionally paint (e.g., wrong anatomy, melted features, impossible geometry)
+- Glaring artifacts such as extra fingers, warped text, incoherent signatures, or fused objects
+- Evidence of upscaling or inpainting damage (smeared textures, repeating noise patterns, mismatched edges)
+
+DO NOT flag a work as AI-generated just because it is highly polished, smooth, detailed, or technically refined. Many human artists produce very polished, smooth, or refined work. Real human paintings can also be clean, consistent, and have soft blending. Only reject a work if you can point to concrete, specific AI artifacts.
 
 Respond with ONLY a JSON object, no other text:
 {"aiGenerated": true|false, "confidence": "high|medium|low", "reason": "brief explanation"}
 
-Only return aiGenerated: true if you have clear evidence. When in doubt, favor the artist (return false).`;
+Only return aiGenerated: true if you see multiple concrete, specific artifacts with high confidence. If you are uncertain, if the work is merely polished, or if the only evidence is "smoothness" or "high quality", return aiGenerated: false with confidence "low" and favor the artist. When in doubt, always side with the artist.`;
 
 export const FOLLOWUP_PROMPT = `You are a world-class Master Art Teacher continuing a conversation with a student about their artwork. Be warm, specific, and actionable. Keep responses concise (150-300 words). Use markdown for structure. Reference the previous feedback context naturally.`;
 
