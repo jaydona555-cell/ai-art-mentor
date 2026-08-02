@@ -142,155 +142,122 @@ function AppContent() {
     if (contrast === "high") body.classList.add("contrast-high");
   }, [sensoryMode, fontSize, fontFamily, contrast]);
 
-  const handleImageSelected = useCallback((file: File) => {
+  const handleImageSelected = useCallback(async (file: File) => {
     setSelectedFile(file);
-    setPreview(URL.createObjectURL(file));
     setAnalysis(INITIAL_STATE);
+    try {
+      // Rasterizes SVG/BMP/TIFF/AVIF/HEIC etc. into a model-safe PNG.
+      const normalized = await normalizeImage(file);
+      setPreview(normalized.dataUrl);
+      setImagePayload({ base64: normalized.base64, mimeType: normalized.mimeType });
+      setLastImageBase64(normalized.base64);
+    } catch (err) {
+      setPreview(null);
+      setImagePayload(null);
+      setAnalysis({
+        ...INITIAL_STATE,
+        error: err instanceof Error ? err.message : "Could not read that image.",
+      });
+    }
   }, []);
 
   const handleClear = useCallback(() => {
     setSelectedFile(null);
-    if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
+    setImagePayload(null);
     setAnalysis(INITIAL_STATE);
-  }, [preview]);
+  }, []);
 
   const handleAnalyze = useCallback(async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || !imagePayload) return;
 
     setAnalysis({ ...INITIAL_STATE, loading: true });
 
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const base64 = (reader.result as string).split(",")[1];
-        setLastImageBase64(base64);
-        try {
-          const apiUrl = ANALYZE_ENDPOINT;
-          const response = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-              
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              imageBase64: base64,
-              mimeType: selectedFile.type,
-              preferredMedium: MEDIUM_API_VALUES[medium],
-              profilePrompt: profilePromptString,
-            }),
-          });
-
-          const data = await response.json().catch(() => null);
-
-          if (!response.ok) {
-            throw new Error(data?.error || `The analysis service returned an error (${response.status})`);
-          }
-
-          if (!data) {
-            throw new Error("No response received from the AI");
-          }
-
-          if (data.aiDetected) {
-            subtractTokens(AI_PENALTY, "AI-generated art detected penalty");
-            setAnalysis({
-              loading: false,
-              feedback: null,
-              error: null,
-              errorType: null,
-              aiDetected: true,
-              skillLevel: null,
-              tokensAwarded: -AI_PENALTY,
-              tokenBreakdown: [],
-              critiquePins: [],
-              savedToPortfolio: false,
-            });
-            return;
-          }
-
-          // ---- Parse the strict JSON response from the edge function ----
-          const feedbackText = typeof data.feedback === "string" ? data.feedback.trim() : "";
-          if (!feedbackText) {
-            throw new Error("The AI did not return readable feedback. Please try again.");
-          }
-
-          const rawSkill = typeof data.skillLevel === "string" ? data.skillLevel : "";
-          const pins: CritiquePin[] = Array.isArray(data.critiquePins) ? data.critiquePins : [];
-
-          // ---- Advanced scoring calculation (via scoring utility) ----
-          
-          const { total, breakdown, normalizedSkill } = calculateTokens({
-            skillLevel: rawSkill || "beginner",
-            mediumMatch: data.mediumMatch === true,
-            isAnalog: data.isAnalog === true,
-            experimentationLevel: data.experimentationLevel || "low",
-            critiquePins: pins,
-          });
-
-          // ---- Streak bonus: recordUpload computes the new streak and returns the bonus ----
-          const uploadResult = recordUpload(medium, total);
-          addTokens(total + uploadResult.streakBonus, `Artwork analyzed — ${normalizedSkill} level`);
-
-          setAnalysis({
-            loading: false,
-            feedback: feedbackText,
-            error: null,
-            errorType: null,
-            aiDetected: false,
-            skillLevel: normalizedSkill,
-            tokensAwarded: total,
-            tokenBreakdown: breakdown,
-            critiquePins: pins,
-            savedToPortfolio: false,
-          });
-
-          // ---- Save to portfolio (cloud storage + database) ----
-          if (selectedFile) {
-            portfolio.addEntry({
-              file: selectedFile,
-              skillLevel: normalizedSkill,
-              tokensEarned: total,
-              feedback: feedbackText,
-              critiquePins: pins,
-              medium: medium,
-              mediumMatch: data.mediumMatch === true,
-              isAnalog: data.isAnalog === true,
-              experimentationLevel: data.experimentationLevel || "low",
-            }).then((saved) => {
-              if (saved) setAnalysis((prev) => ({ ...prev, savedToPortfolio: true }));
-            });
-          }
-
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : "Failed to analyze artwork";
-          const errorType: AnalysisState["errorType"] =
-            msg.includes("timed out") || msg.includes("timeout") ? "timeout"
-            : msg.includes("busy") || msg.includes("rate") || msg.includes("429") ? "rate-limit"
-            : "generic";
-          setAnalysis({
-            ...INITIAL_STATE,
-            loading: false,
-            error: msg,
-            errorType,
-          });
-        }
-      };
-      reader.onerror = () => {
-        setAnalysis({
-          ...INITIAL_STATE,
-          loading: false,
-          error: "Failed to read image file",
-        });
-      };
-      reader.readAsDataURL(selectedFile);
-    } catch (err) {
-      setAnalysis({
-        ...INITIAL_STATE,
-        loading: false,
-        error: err instanceof Error ? err.message : "An unexpected error occurred",
+      const data = await postAnalyze<any>({
+        imageBase64: imagePayload.base64,
+        mimeType: imagePayload.mimeType,
+        preferredMedium: MEDIUM_API_VALUES[medium],
+        profilePrompt: profilePromptString,
+        notes,
       });
+
+      if (data.aiDetected) {
+        subtractTokens(AI_PENALTY, "AI-generated art detected penalty");
+        setAnalysis({
+          loading: false,
+          feedback: null,
+          error: null,
+          errorType: null,
+          aiDetected: true,
+          skillLevel: null,
+          tokensAwarded: -AI_PENALTY,
+          tokenBreakdown: [],
+          critiquePins: [],
+          savedToPortfolio: false,
+        });
+        return;
+      }
+
+      const feedbackText = typeof data.feedback === "string" ? data.feedback.trim() : "";
+      if (!feedbackText) {
+        throw new Error("The AI did not return readable feedback. Please try again.");
+      }
+
+      const rawSkill = typeof data.skillLevel === "string" ? data.skillLevel : "";
+      const pins: CritiquePin[] = Array.isArray(data.critiquePins) ? data.critiquePins : [];
+
+      const { total, breakdown, normalizedSkill } = calculateTokens({
+        skillLevel: rawSkill || "beginner",
+        mediumMatch: data.mediumMatch === true,
+        isAnalog: data.isAnalog === true,
+        experimentationLevel: data.experimentationLevel || "low",
+        critiquePins: pins,
+      });
+
+      const uploadResult = recordUpload(medium, total);
+      addTokens(total + uploadResult.streakBonus, `Artwork analyzed — ${normalizedSkill} level`);
+
+      setAnalysis({
+        loading: false,
+        feedback: feedbackText,
+        error: null,
+        errorType: null,
+        aiDetected: false,
+        skillLevel: normalizedSkill,
+        tokensAwarded: total,
+        tokenBreakdown: breakdown,
+        critiquePins: pins,
+        savedToPortfolio: false,
+      });
+
+      portfolio
+        .addEntry({
+          file: selectedFile,
+          skillLevel: normalizedSkill,
+          tokensEarned: total,
+          feedback: feedbackText,
+          critiquePins: pins,
+          medium: medium,
+          mediumMatch: data.mediumMatch === true,
+          isAnalog: data.isAnalog === true,
+          experimentationLevel: data.experimentationLevel || "low",
+        })
+        .then((saved) => {
+          if (saved) setAnalysis((prev) => ({ ...prev, savedToPortfolio: true }));
+        });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to analyze artwork";
+      const errorType: AnalysisState["errorType"] =
+        msg.includes("timed out") || msg.includes("timeout")
+          ? "timeout"
+          : msg.includes("busy") || msg.includes("rate") || msg.includes("429")
+            ? "rate-limit"
+            : "generic";
+      setAnalysis({ ...INITIAL_STATE, loading: false, error: msg, errorType });
     }
-  }, [selectedFile, addTokens, subtractTokens, medium]);
+  }, [selectedFile, imagePayload, addTokens, subtractTokens, medium, notes, profilePromptString, recordUpload, portfolio]);
+
 
   const handleReset = useCallback(() => {
     handleClear();
