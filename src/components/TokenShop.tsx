@@ -289,6 +289,9 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
   const { tokens, purchasedBackgrounds, purchasedItems, activeBackground, purchaseBackground, purchaseItem, setActiveBackground } = useReward();
   const [generating, setGenerating] = useState(false);
   const [category, setCategory] = useState<Category>("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<"default" | "price-asc" | "price-desc">("default");
+
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [coinBurst, setCoinBurst] = useState<number | null>(null);
   const [pulseId, setPulseId] = useState<string | null>(null);
