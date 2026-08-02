@@ -270,28 +270,22 @@ function AppContent() {
       // Step 1: Analyze the last uploaded image's style
       let styleDescription = "a beautiful artistic masterpiece";
       if (lastImageBase64) {
-        const styleRes = await fetch(ANALYZE_ENDPOINT, {
-          method: "POST",
-          headers: {  "Content-Type": "application/json" },
-          body: JSON.stringify({ mode: "analyze-style", imageBase64: lastImageBase64 }),
-        });
-        const styleData = await styleRes.json().catch(() => null);
+        const styleData = await postAnalyze<{ styleDescription?: string }>({
+          mode: "analyze-style",
+          imageBase64: lastImageBase64,
+          mimeType: imagePayload?.mimeType,
+        }).catch(() => null);
         if (styleData?.styleDescription) {
           styleDescription = styleData.styleDescription;
         }
       }
 
       // Step 2: Generate the masterpiece
-      const genRes = await fetch(ANALYZE_ENDPOINT, {
-        method: "POST",
-        headers: {  "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "generate-masterpiece", styleDescription }),
+      const genData = await postAnalyze<{ imageBase64?: string | null; imageUrl?: string | null }>({
+        mode: "generate-masterpiece",
+        styleDescription,
       });
-      const genData = await genRes.json().catch(() => null);
 
-      if (!genRes.ok) {
-        throw new Error(genData?.error || "Failed to generate masterpiece");
-      }
 
       if (genData.imageBase64) {
         setMasterpiece({
