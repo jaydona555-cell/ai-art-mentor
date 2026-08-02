@@ -35,6 +35,53 @@ const CHINESE_PATTERN = `
   </svg>
 `;
 
+const DECO_PATTERN = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <defs>
+      <pattern id="deco" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+        <path d="M50 10 L90 50 L50 90 L10 50 Z" fill="none" stroke="#C9A961" stroke-width="1.2" opacity="0.14"/>
+        <path d="M50 30 L70 50 L50 70 L30 50 Z" fill="none" stroke="#B08D57" stroke-width="1" opacity="0.1"/>
+      </pattern>
+    </defs>
+    <rect width="300" height="300" fill="url(#deco)"/>
+  </svg>
+`;
+
+const WAVE_PATTERN = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+    <defs>
+      <pattern id="wave" x="0" y="0" width="120" height="60" patternUnits="userSpaceOnUse">
+        <path d="M0 40 Q30 10 60 40 T120 40" fill="none" stroke="#3E6E9E" stroke-width="1.6" opacity="0.12"/>
+        <path d="M0 55 Q30 25 60 55 T120 55" fill="none" stroke="#7CA6C9" stroke-width="1.2" opacity="0.09"/>
+      </pattern>
+    </defs>
+    <rect width="240" height="240" fill="url(#wave)"/>
+  </svg>
+`;
+
+const STAR_PATTERN = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+    <circle cx="40" cy="60" r="2" fill="#EADFC8" opacity="0.5"/>
+    <circle cx="180" cy="30" r="1.5" fill="#EADFC8" opacity="0.4"/>
+    <circle cx="260" cy="140" r="2.5" fill="#EADFC8" opacity="0.45"/>
+    <circle cx="90" cy="220" r="1.8" fill="#EADFC8" opacity="0.4"/>
+    <circle cx="300" cy="280" r="2" fill="#EADFC8" opacity="0.35"/>
+    <circle cx="150" cy="180" r="1.2" fill="#EADFC8" opacity="0.5"/>
+  </svg>
+`;
+
+const CANVAS_PATTERN = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+    <defs>
+      <pattern id="linen" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+        <path d="M0 0h8M0 4h8" stroke="#B08D57" stroke-width="0.5" opacity="0.09"/>
+        <path d="M0 0v8M4 0v8" stroke="#8C6D46" stroke-width="0.5" opacity="0.07"/>
+      </pattern>
+    </defs>
+    <rect width="120" height="120" fill="url(#linen)"/>
+  </svg>
+`;
+
 const BACKGROUNDS: Record<ShopBackground, { gradient: string; pattern: string }> = {
   "greek-mythology": {
     gradient: "linear-gradient(135deg, #F2EDE3 0%, #F0E8D6 50%, #E8D5CE 100%)",
@@ -44,7 +91,24 @@ const BACKGROUNDS: Record<ShopBackground, { gradient: string; pattern: string }>
     gradient: "linear-gradient(135deg, #F4F6F8 0%, #DCE6EF 50%, #D6E3D8 100%)",
     pattern: CHINESE_PATTERN,
   },
+  "renaissance-atelier": {
+    gradient: "linear-gradient(135deg, #F6EFE2 0%, #EBDCC4 55%, #DCC7A8 100%)",
+    pattern: CANVAS_PATTERN,
+  },
+  "ukiyo-e": {
+    gradient: "linear-gradient(135deg, #F3F7FA 0%, #DCE9F2 50%, #CFE0EC 100%)",
+    pattern: WAVE_PATTERN,
+  },
+  "art-deco": {
+    gradient: "linear-gradient(135deg, #F7F1E6 0%, #EFE2C9 50%, #E5D3AE 100%)",
+    pattern: DECO_PATTERN,
+  },
+  "cosmic-observatory": {
+    gradient: "linear-gradient(135deg, #1B1D2E 0%, #2A2C46 55%, #3B3358 100%)",
+    pattern: STAR_PATTERN,
+  },
 };
+
 
 interface PremiumBackgroundProps {
   background: ShopBackground;

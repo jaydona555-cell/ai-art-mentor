@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Coins, Check, Lock, Sparkles, Mountain, Palette, Wand2, Loader2,
-  Music, Brush, Frame, Star,
+  Music, Brush, Frame, Star, Search, Droplet, Grid3x3, BookOpen, Download,
+  Snowflake, Flower2, Moon, Volume2, Landmark, Waves,
 } from "lucide-react";
 import { useState } from "react";
 import { useReward, type ShopBackground, type ShopItem } from "@/context/RewardContext";
@@ -45,6 +46,51 @@ const SHOP_ITEMS: ShopItemDef[] = [
     category: "backgrounds",
   },
   {
+    id: "renaissance-atelier",
+    name: "Renaissance Atelier",
+    description: "Warm linen canvas texture and candlelit ochres — the workshop of the old masters.",
+    cost: 85,
+    icon: Landmark,
+    accent: "from-amber-600 to-orange-800",
+    type: "background",
+    value: "renaissance-atelier",
+    category: "backgrounds",
+  },
+  {
+    id: "ukiyo-e",
+    name: "Ukiyo-e Waves",
+    description: "Japanese woodblock waves in indigo and mist. Calm, rhythmic, and endlessly inspiring.",
+    cost: 85,
+    icon: Waves,
+    accent: "from-sky-500 to-indigo-700",
+    type: "background",
+    value: "ukiyo-e",
+    category: "backgrounds",
+  },
+  {
+    id: "art-deco",
+    name: "Art Deco Gold",
+    description: "Geometric gilded diamonds and champagne tones from the roaring twenties.",
+    cost: 90,
+    icon: Frame,
+    accent: "from-yellow-500 to-amber-700",
+    type: "background",
+    value: "art-deco",
+    category: "backgrounds",
+  },
+  {
+    id: "cosmic-observatory",
+    name: "Cosmic Observatory",
+    description: "A deep midnight sky scattered with stars for late-night studio sessions.",
+    cost: 110,
+    icon: Moon,
+    accent: "from-indigo-700 to-purple-900",
+    type: "background",
+    value: "cosmic-observatory",
+    category: "backgrounds",
+    badge: "New",
+  },
+  {
     id: "generate-masterpiece",
     name: "Generate Masterpiece",
     description: "Commission the AI to generate a unique master image inspired by your past artwork styles. A one-of-a-kind reward.",
@@ -79,6 +125,17 @@ const SHOP_ITEMS: ShopItemDef[] = [
     category: "cosmetic",
   },
   {
+    id: "frame-minimal",
+    name: "Minimal Gallery Frame",
+    description: "A crisp, contemporary white frame for artists who prefer the work to speak for itself.",
+    cost: 30,
+    icon: Frame,
+    accent: "from-slate-300 to-slate-500",
+    type: "item",
+    value: "frame-minimal",
+    category: "cosmetic",
+  },
+  {
     id: "ambient-sounds",
     name: "Ambient Studio Sounds",
     description: "Unlock background ambient audio — gentle brushstrokes, birdsong, or rain — while you create and reflect.",
@@ -87,6 +144,17 @@ const SHOP_ITEMS: ShopItemDef[] = [
     accent: "from-sky-400 to-blue-600",
     type: "item",
     value: "ambient-sounds",
+    category: "tools",
+  },
+  {
+    id: "narrator-voice",
+    name: "Warm Narrator Voice",
+    description: "A richer, slower narration voice for read-aloud critiques. Easier on the ears during long sessions.",
+    cost: 45,
+    icon: Volume2,
+    accent: "from-rose-300 to-rose-500",
+    type: "item",
+    value: "narrator-voice",
     category: "tools",
   },
   {
@@ -112,6 +180,95 @@ const SHOP_ITEMS: ShopItemDef[] = [
     category: "tools",
     badge: "Best Value",
   },
+  {
+    id: "colour-analysis",
+    name: "Colour Harmony Report",
+    description: "A dedicated breakdown of your palette — temperature, harmony type, and suggested accents.",
+    cost: 55,
+    icon: Droplet,
+    accent: "from-cyan-400 to-teal-600",
+    type: "item",
+    value: "colour-analysis",
+    category: "tools",
+  },
+  {
+    id: "composition-grid",
+    name: "Composition Grid Overlay",
+    description: "Overlay rule-of-thirds, golden ratio and diagonal guides directly on your uploaded artwork.",
+    cost: 45,
+    icon: Grid3x3,
+    accent: "from-lime-400 to-green-600",
+    type: "item",
+    value: "composition-grid",
+    category: "tools",
+  },
+  {
+    id: "master-study-plan",
+    name: "Master Study Plan",
+    description: "A personalised four-week practice plan built from your critiques and skill level.",
+    cost: 95,
+    icon: BookOpen,
+    accent: "from-orange-400 to-red-600",
+    type: "item",
+    value: "master-study-plan",
+    category: "tools",
+    badge: "Popular",
+  },
+  {
+    id: "palette-generator",
+    name: "Palette Generator",
+    description: "Generate custom colour palettes drawn from your own artwork to reuse in future pieces.",
+    cost: 50,
+    icon: Palette,
+    accent: "from-fuchsia-400 to-purple-600",
+    type: "item",
+    value: "palette-generator",
+    category: "tools",
+  },
+  {
+    id: "portfolio-export",
+    name: "Portfolio Export",
+    description: "Export your gallery and critiques as a shareable, printable portfolio document.",
+    cost: 70,
+    icon: Download,
+    accent: "from-blue-400 to-indigo-600",
+    type: "item",
+    value: "portfolio-export",
+    category: "tools",
+  },
+  {
+    id: "streak-freeze",
+    name: "Streak Freeze",
+    description: "Protect your upload streak for one missed day. Life happens — your progress stays.",
+    cost: 65,
+    icon: Snowflake,
+    accent: "from-sky-300 to-cyan-500",
+    type: "item",
+    value: "streak-freeze",
+    category: "tools",
+  },
+  {
+    id: "sticker-pack-botanical",
+    name: "Botanical Sticker Pack",
+    description: "Pressed flowers, ferns and vines to decorate your critiques and sticker canvas.",
+    cost: 40,
+    icon: Flower2,
+    accent: "from-green-300 to-emerald-600",
+    type: "item",
+    value: "sticker-pack-botanical",
+    category: "cosmetic",
+  },
+  {
+    id: "sticker-pack-celestial",
+    name: "Celestial Sticker Pack",
+    description: "Moons, constellations and comets for dreamers working late into the night.",
+    cost: 55,
+    icon: Sparkles,
+    accent: "from-indigo-400 to-violet-600",
+    type: "item",
+    value: "sticker-pack-celestial",
+    category: "cosmetic",
+  },
 ];
 
 const CATEGORIES: { value: Category; label: string }[] = [
@@ -120,6 +277,7 @@ const CATEGORIES: { value: Category; label: string }[] = [
   { value: "tools", label: "Tools" },
   { value: "cosmetic", label: "Cosmetic" },
 ];
+
 
 interface TokenShopProps {
   open: boolean;
@@ -131,6 +289,9 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
   const { tokens, purchasedBackgrounds, purchasedItems, activeBackground, purchaseBackground, purchaseItem, setActiveBackground } = useReward();
   const [generating, setGenerating] = useState(false);
   const [category, setCategory] = useState<Category>("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<"default" | "price-asc" | "price-desc">("default");
+
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [coinBurst, setCoinBurst] = useState<number | null>(null);
   const [pulseId, setPulseId] = useState<string | null>(null);
@@ -185,7 +346,14 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
     onGenerateMasterpiece();
   };
 
-  const filteredItems = category === "all" ? SHOP_ITEMS : SHOP_ITEMS.filter((i) => i.category === category);
+  const q = query.trim().toLowerCase();
+  const filteredItems = SHOP_ITEMS
+    .filter((i) => (category === "all" ? true : i.category === category))
+    .filter((i) => (q ? `${i.name} ${i.description}`.toLowerCase().includes(q) : true))
+    .sort((a, b) =>
+      sort === "price-asc" ? a.cost - b.cost : sort === "price-desc" ? b.cost - a.cost : 0,
+    );
+
 
   if (!open) return null;
 
@@ -233,8 +401,32 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
           </div>
         </div>
 
+        {/* Search + Sort */}
+        <div className="px-6 pt-4 flex flex-wrap items-center gap-2">
+          <div className="flex-1 min-w-[180px] flex items-center gap-2 bg-white/70 border border-sand/50 rounded-full px-3 py-1.5">
+            <Search size={14} className="text-muted-brown" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search the shop..."
+              className="flex-1 bg-transparent text-sm text-deep-earth placeholder:text-warm-taupe/60 outline-none"
+              aria-label="Search shop items"
+            />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className="bg-white/70 border border-sand/50 rounded-full px-3 py-1.5 text-xs font-semibold text-muted-brown outline-none"
+            aria-label="Sort shop items"
+          >
+            <option value="default">Featured</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+          </select>
+        </div>
+
         {/* Category Tabs */}
-        <div className="flex gap-2 px-6 pt-4 pb-2 border-b border-sand/30">
+        <div className="flex flex-wrap gap-2 px-6 pt-3 pb-2 border-b border-sand/30">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
@@ -248,7 +440,11 @@ export default function TokenShop({ open, onClose, onGenerateMasterpiece }: Toke
               {cat.label}
             </button>
           ))}
+          <span className="ml-auto self-center text-[11px] text-muted-brown">
+            {filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}
+          </span>
         </div>
+
 
         {/* Items */}
         <div className="overflow-y-auto scroll-warm p-6 space-y-3">
