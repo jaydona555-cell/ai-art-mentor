@@ -202,8 +202,12 @@ async function handlePost({ request }: { request: Request }) {
     });
     if (!analysis.ok) return json({ error: analysis.message }, analysis.status);
 
-    const parsed = parseAnalysisResponse(textOf(analysis.data));
+    const rawText = textOf(analysis.data);
+    const parsed = parseAnalysisResponse(rawText);
     if (!parsed) {
+      console.error(
+        `[analyze-artwork] parse failure. finish_reason=${analysis.data?.choices?.[0]?.finish_reason} raw=${rawText.slice(0, 2000)}`,
+      );
       return json(
         { error: "The AI response could not be parsed. Please try uploading your artwork again." },
         502,
