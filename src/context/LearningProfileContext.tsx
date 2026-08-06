@@ -42,6 +42,7 @@ export interface LearningProfile {
 }
 
 interface LearningProfileContextValue extends LearningProfile {
+  profileLoaded: boolean;
   setProfile: (p: NeuroProfile) => void;
   setFeedbackStyle: (s: FeedbackStyle) => void;
   setDetailLevel: (d: DetailLevel) => void;
@@ -128,6 +129,7 @@ const LearningProfileContext = createContext<LearningProfileContextValue | null>
 
 export function LearningProfileProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<LearningProfile>(DEFAULT_PROFILE);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const hydrated = useRef(false);
 
   // Load persisted profile after hydration so SSR markup stays stable.
@@ -139,6 +141,7 @@ export function LearningProfileProvider({ children }: { children: ReactNode }) {
       // ignore
     }
     hydrated.current = true;
+    setProfileLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -166,6 +169,7 @@ export function LearningProfileProvider({ children }: { children: ReactNode }) {
 
   const value: LearningProfileContextValue = {
     ...state,
+    profileLoaded,
     setProfile: (p) => update("profile", p),
     setFeedbackStyle: (s) => update("feedbackStyle", s),
     setDetailLevel: (d) => update("detailLevel", d),
