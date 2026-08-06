@@ -15,6 +15,8 @@ import StreakCelebration from "@/components/StreakCelebration";
 import SeasonalBackground from "@/components/SeasonalBackground";
 import SeasonalControl from "@/components/SeasonalControl";
 import PremiumBackground from "@/components/PremiumBackground";
+import AmbientFX from "@/components/AmbientFX";
+
 import TokenShop from "@/components/TokenShop";
 import PreferredMediumSelector from "@/components/PreferredMediumSelector";
 import MasterpieceModal from "@/components/MasterpieceModal";
