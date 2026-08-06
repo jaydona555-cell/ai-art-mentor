@@ -15,6 +15,8 @@ import StreakCelebration from "@/components/StreakCelebration";
 import SeasonalBackground from "@/components/SeasonalBackground";
 import SeasonalControl from "@/components/SeasonalControl";
 import PremiumBackground from "@/components/PremiumBackground";
+import AmbientFX from "@/components/AmbientFX";
+
 import TokenShop from "@/components/TokenShop";
 import PreferredMediumSelector from "@/components/PreferredMediumSelector";
 import MasterpieceModal from "@/components/MasterpieceModal";
@@ -321,22 +323,25 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen relative text-deep-earth transition-all duration-700 ${isWinter ? "text-cream" : ""}`}>
-      {showPremiumBg && activeBackground ? (
+      {mounted && (showPremiumBg && activeBackground ? (
         <PremiumBackground background={activeBackground} />
       ) : (
         <SeasonalBackground />
-      )}
+      ))}
+
+      <AmbientFX />
 
       <div className="relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-accent-amber/10 to-accent-coral/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-0 w-80 h-80 bg-gradient-to-br from-accent-sage/10 to-accent-sky/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-gradient-to-br from-accent-rose/10 to-accent-lavender/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-accent-amber/10 to-accent-coral/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
+        <div className="absolute top-1/3 left-0 w-80 h-80 bg-gradient-to-br from-accent-sage/10 to-accent-sky/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-gradient-to-br from-accent-rose/10 to-accent-lavender/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
+
 
         {/* Header */}
         <header className="relative border-b border-sand/50 backdrop-blur-md bg-cream/70 sticky top-0 z-30">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-accent-amber via-accent-coral to-accent-rose flex items-center justify-center shadow-glow-amber">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-accent-amber via-accent-coral to-accent-rose flex items-center justify-center shadow-glow-amber fx-halo fx-sheen">
                 <Palette size={22} className="text-white" />
               </div>
               <div>
