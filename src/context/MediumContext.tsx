@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Medium =
   | "none"
@@ -36,15 +36,17 @@ const STORAGE_KEY = "atelier_preferred_medium_v1";
 const MediumContext = createContext<MediumContextValue | null>(null);
 
 export function MediumProvider({ children }: { children: ReactNode }) {
-  const [medium, setMediumState] = useState<Medium>(() => {
+  const [medium, setMediumState] = useState<Medium>("none");
+
+  // Read persisted preference after hydration so SSR markup stays stable.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && saved in MEDIUM_LABELS) return saved as Medium;
+      if (saved && saved in MEDIUM_LABELS) setMediumState(saved as Medium);
     } catch {
       // ignore
     }
-    return "none";
-  });
+  }, []);
 
   const setMedium = (m: Medium) => {
     setMediumState(m);

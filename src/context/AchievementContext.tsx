@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 
 export interface Badge {
   id: string;
@@ -117,12 +117,30 @@ function checkBadges(state: AchievementState): { badges: Badge[]; newlyEarned: B
 const AchievementContext = createContext<AchievementContextValue | null>(null);
 
 export function AchievementProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AchievementState>(() => {
+  const [state, setState] = useState<AchievementState>({
+    totalUploads: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    lastUploadDate: null,
+    followupQuestionsAsked: 0,
+    tokensEarnedTotal: 0,
+    mediumsExplored: [],
+    badges: getInitialBadges(),
+    newlyEarnedBadge: null,
+    streakMilestonesReached: [],
+    pendingStreakMilestone: null,
+  });
+  const hydrated = useRef(false);
+
+  const [newlyEarnedBadge, setNewlyEarnedBadge] = useState<Badge | null>(null);
+
+  // Load persisted progress after hydration so SSR markup stays stable.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return {
+        setState({
           totalUploads: parsed.totalUploads ?? 0,
           currentStreak: parsed.currentStreak ?? 0,
           longestStreak: parsed.longestStreak ?? 0,
@@ -134,29 +152,16 @@ export function AchievementProvider({ children }: { children: ReactNode }) {
           newlyEarnedBadge: null,
           streakMilestonesReached: parsed.streakMilestonesReached ?? [],
           pendingStreakMilestone: null,
-        };
+        });
       }
     } catch {
       // ignore
     }
-    return {
-      totalUploads: 0,
-      currentStreak: 0,
-      longestStreak: 0,
-      lastUploadDate: null,
-      followupQuestionsAsked: 0,
-      tokensEarnedTotal: 0,
-      mediumsExplored: [],
-      badges: getInitialBadges(),
-      newlyEarnedBadge: null,
-      streakMilestonesReached: [],
-      pendingStreakMilestone: null,
-    };
-  });
-
-  const [newlyEarnedBadge, setNewlyEarnedBadge] = useState<Badge | null>(null);
+    hydrated.current = true;
+  }, []);
 
   useEffect(() => {
+    if (!hydrated.current) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         totalUploads: state.totalUploads,

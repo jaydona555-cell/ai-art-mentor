@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 
 export type NeuroProfile =
   | "none"
@@ -42,6 +42,7 @@ export interface LearningProfile {
 }
 
 interface LearningProfileContextValue extends LearningProfile {
+  profileLoaded: boolean;
   setProfile: (p: NeuroProfile) => void;
   setFeedbackStyle: (s: FeedbackStyle) => void;
   setDetailLevel: (d: DetailLevel) => void;
@@ -127,20 +128,24 @@ const PRESETS: Record<Exclude<NeuroProfile, "none">, Partial<LearningProfile>> =
 const LearningProfileContext = createContext<LearningProfileContextValue | null>(null);
 
 export function LearningProfileProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<LearningProfile>(() => {
+  const [state, setState] = useState<LearningProfile>(DEFAULT_PROFILE);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const hydrated = useRef(false);
+
+  // Load persisted profile after hydration so SSR markup stays stable.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return { ...DEFAULT_PROFILE, ...parsed };
-      }
+      if (saved) setState({ ...DEFAULT_PROFILE, ...JSON.parse(saved) });
     } catch {
       // ignore
     }
-    return DEFAULT_PROFILE;
-  });
+    hydrated.current = true;
+    setProfileLoaded(true);
+  }, []);
 
   useEffect(() => {
+    if (!hydrated.current) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
@@ -164,6 +169,7 @@ export function LearningProfileProvider({ children }: { children: ReactNode }) {
 
   const value: LearningProfileContextValue = {
     ...state,
+    profileLoaded,
     setProfile: (p) => update("profile", p),
     setFeedbackStyle: (s) => update("feedbackStyle", s),
     setDetailLevel: (d) => update("detailLevel", d),

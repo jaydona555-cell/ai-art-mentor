@@ -101,7 +101,7 @@ function AppContent() {
   const { recordUpload, recordFollowup, pendingStreakMilestone, clearPendingStreakMilestone } = useAchievements();
   const learningProfile = useLearningProfile();
   const { notes, hasWorkspaceContent } = useWorkspace();
-  const { surveyCompleted } = learningProfile;
+  const { surveyCompleted, profileLoaded } = learningProfile;
   const [view, setView] = useState<"studio" | "gallery">("studio");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -122,8 +122,8 @@ function AppContent() {
 
   // Auto-open survey on first visit
   useEffect(() => {
-    if (!surveyCompleted) setProfileOpen(true);
-  }, [surveyCompleted]);
+    if (profileLoaded && !surveyCompleted) setProfileOpen(true);
+  }, [profileLoaded, surveyCompleted]);
   const [focusMode, setFocusMode] = useState(false);
   const [checkInShow, setCheckInShow] = useState(false);
   const [stepByStep, setStepByStep] = useState(false);

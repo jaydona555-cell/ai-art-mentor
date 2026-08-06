@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 
 export type StickerPack = "starter" | "nature" | "cosmic";
 export type ThemeName = "blossom" | "ocean";
@@ -128,12 +128,18 @@ function findNewlyUnlocked(oldState: UnlockState, newState: UnlockState): string
 const RewardContext = createContext<RewardContextValue | null>(null);
 
 export function RewardProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<RewardState>(() => {
+  const [state, setState] = useState<RewardState>(DEFAULT_STATE);
+  const hydrated = useRef(false);
+
+  const [newlyUnlocked, setNewlyUnlocked] = useState<string | null>(null);
+
+  // Load persisted tokens/purchases after hydration so SSR markup stays stable.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return {
+        setState({
           tokens: parsed.tokens ?? 0,
           totalEarned: parsed.totalEarned ?? 0,
           unlocks: computeUnlocks(parsed.totalEarned ?? 0),
@@ -141,17 +147,16 @@ export function RewardProvider({ children }: { children: ReactNode }) {
           purchasedBackgrounds: parsed.purchasedBackgrounds ?? [],
           purchasedItems: parsed.purchasedItems ?? [],
           activeBackground: parsed.activeBackground ?? null,
-        };
+        });
       }
     } catch {
       // ignore
     }
-    return DEFAULT_STATE;
-  });
-
-  const [newlyUnlocked, setNewlyUnlocked] = useState<string | null>(null);
+    hydrated.current = true;
+  }, []);
 
   useEffect(() => {
+    if (!hydrated.current) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         tokens: state.tokens,
