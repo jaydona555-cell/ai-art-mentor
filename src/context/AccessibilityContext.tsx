@@ -56,20 +56,22 @@ export function getNarrationRate(speed: NarrationSpeed): number {
 const AccessibilityContext = createContext<AccessibilityContextValue | null>(null);
 
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AccessibilityState>(() => {
+  const [state, setState] = useState<AccessibilityState>(DEFAULT_STATE);
+  const hydrated = useRef(false);
+
+  // Load persisted settings after hydration so SSR markup stays stable.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return { ...DEFAULT_STATE, ...parsed };
-      }
+      if (saved) setState({ ...DEFAULT_STATE, ...JSON.parse(saved) });
     } catch {
       // ignore
     }
-    return DEFAULT_STATE;
-  });
+    hydrated.current = true;
+  }, []);
 
   useEffect(() => {
+    if (!hydrated.current) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
