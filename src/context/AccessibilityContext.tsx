@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 
 export type SensoryMode = "full" | "reduced" | "minimal";
 export type FontSize = "sm" | "base" | "lg" | "xl";
