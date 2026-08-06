@@ -29,17 +29,22 @@ const COST_PER_STICKER = 10;
 const StickerPlacementContext = createContext<StickerPlacementContextValue | null>(null);
 
 export function StickerPlacementProvider({ children }: { children: ReactNode }) {
-  const [stickers, setStickers] = useState<PlacedSticker[]>(() => {
+  const [stickers, setStickers] = useState<PlacedSticker[]>([]);
+  const hydrated = useRef(false);
+
+  // Load persisted stickers after hydration so SSR markup stays stable.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
+      if (saved) setStickers(JSON.parse(saved));
     } catch {
       // ignore
     }
-    return [];
-  });
+    hydrated.current = true;
+  }, []);
 
   useEffect(() => {
+    if (!hydrated.current) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers));
     } catch {
