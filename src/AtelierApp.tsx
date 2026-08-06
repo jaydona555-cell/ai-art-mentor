@@ -321,16 +321,19 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen relative text-deep-earth transition-all duration-700 ${isWinter ? "text-cream" : ""}`}>
-      {showPremiumBg && activeBackground ? (
+      {mounted && (showPremiumBg && activeBackground ? (
         <PremiumBackground background={activeBackground} />
       ) : (
         <SeasonalBackground />
-      )}
+      ))}
+
+      <AmbientFX />
 
       <div className="relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-accent-amber/10 to-accent-coral/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-0 w-80 h-80 bg-gradient-to-br from-accent-sage/10 to-accent-sky/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-gradient-to-br from-accent-rose/10 to-accent-lavender/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-accent-amber/10 to-accent-coral/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
+        <div className="absolute top-1/3 left-0 w-80 h-80 bg-gradient-to-br from-accent-sage/10 to-accent-sky/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-gradient-to-br from-accent-rose/10 to-accent-lavender/10 rounded-full blur-3xl pointer-events-none animate-pulse-soft" />
+
 
         {/* Header */}
         <header className="relative border-b border-sand/50 backdrop-blur-md bg-cream/70 sticky top-0 z-30">
