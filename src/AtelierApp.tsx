@@ -341,7 +341,7 @@ function AppContent() {
         <header className="relative border-b border-sand/50 backdrop-blur-md bg-cream/70 sticky top-0 z-30">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-accent-amber via-accent-coral to-accent-rose flex items-center justify-center shadow-glow-amber">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-accent-amber via-accent-coral to-accent-rose flex items-center justify-center shadow-glow-amber fx-halo fx-sheen">
                 <Palette size={22} className="text-white" />
               </div>
               <div>
