@@ -1,7 +1,8 @@
 # Atelier — AI Art Teacher for Neurodivergent Creators
 
-# NOTE THIS IS THE OLD VERSION AND NOT FULLY UPDATED 
-[![Open in Bolt](https://bolt.new/static/open-in-bolt.svg)](https://bolt.new/~/sb1-smqwxjmd)
+# NOTE THIS IS THE OLD README AND NOT FULLY UPDATED, REAL VERSION IN LOVABLE
+https://lovable.dev/projects/3fbfa346-8366-4a67-b1b4-4bea828bb050
+https://artistic-companion.lovable.app
 
 An AI-powered art critique tool designed **with** neurodivergent learners in mind, not as an afterthought. Built for the IncludEDU Neurodiversity Hackathon (Track 3: AI Creative Amplifier), with the goal of showcasing at the Stanford Neurodiversity Summit 2026.
 
