@@ -1,4 +1,4 @@
-# Atelier — AI Art Teacher for Neurodivergent Creators
+# LOVABLE VERSION - Atelier — AI Art Teacher for Neurodivergent Creators
 
 # NOTE THIS IS THE OLD README AND NOT FULLY UPDATED, REAL VERSION IN LOVABLE
 https://lovable.dev/projects/3fbfa346-8366-4a67-b1b4-4bea828bb050
