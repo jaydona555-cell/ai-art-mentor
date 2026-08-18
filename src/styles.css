@@ -395,8 +395,8 @@
 .fx-aurora {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(80px) saturate(1.6);
-  opacity: 0.62;
+  filter: blur(90px) saturate(1.5);
+  opacity: 0.34;
   mix-blend-mode: multiply;
   will-change: transform;
   animation: fx-aurora-drift 34s ease-in-out infinite;
@@ -437,7 +437,7 @@
 .fx-wash {
   position: absolute;
   inset: 0;
-  opacity: 0.3;
+  opacity: 0.12;
   mix-blend-mode: soft-light;
   background: linear-gradient(115deg, #FFC454, #FF8AA6, #BA84FF, #58D6B6, #70DCFF, #FFC454);
   background-size: 400% 400%;

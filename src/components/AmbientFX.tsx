@@ -111,7 +111,7 @@ export default function AmbientFX() {
         duration: 16 + Math.random() * 20,
         dx: (Math.random() - 0.5) * 160,
         dy: -40 - Math.random() * 120,
-        opacity: 0.16 + Math.random() * 0.26,
+        opacity: 0.08 + Math.random() * 0.14,
         color: palette[(i + 2) % palette.length],
       })),
     [palette]
