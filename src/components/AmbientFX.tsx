@@ -211,8 +211,14 @@ export default function AmbientFX() {
           />
         ))}
 
+      {/* Vignette */}
+      <div className="fx-vignette" />
+    </div>
 
+    {/* Sparkle layers float above the content */}
+    <div className="pointer-events-none fixed inset-0 z-[5] overflow-hidden" aria-hidden="true">
       {/* Diagonal light rays */}
+
       {!lite && (
         <div className="fx-rays">
           <span style={{ left: "12%", animationDelay: "0s" }} />
