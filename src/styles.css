@@ -518,12 +518,29 @@
 }
 .fx-spark {
   position: absolute;
-  background: var(--fx-color, #C9A961);
+  background: var(--fx-color, #FFC454);
   opacity: 0;
   will-change: transform, opacity;
   animation: fx-spark-twinkle ease-in-out infinite;
   clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
-  filter: drop-shadow(0 0 6px var(--fx-color, #C9A961));
+  filter: drop-shadow(0 0 8px var(--fx-color, #FFC454)) drop-shadow(0 0 16px var(--fx-color, #FFC454));
+}
+
+/* Confetti glitter chips */
+@keyframes fx-confetti-fall {
+  0%   { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.9; }
+  90%  { opacity: 0.9; }
+  100% { transform: translate3d(var(--fx-drift, 30px), 108vh, 0) rotate(720deg); opacity: 0; }
+}
+.fx-confetti {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  background: var(--fx-color, #FF8AA6);
+  box-shadow: 0 0 10px var(--fx-color, #FF8AA6);
+  will-change: transform, opacity;
+  animation: fx-confetti-fall linear infinite;
 }
 
 .fx-cursor-glow {
@@ -531,8 +548,9 @@
   top: 0; left: 0;
   width: 520px; height: 520px;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(201,169,97,0.18), rgba(201,169,97,0.06) 45%, transparent 70%);
-  mix-blend-mode: screen;
+  background: conic-gradient(from 0deg, rgba(255,196,84,0.24), rgba(255,138,166,0.22), rgba(186,132,255,0.22), rgba(88,214,182,0.22), rgba(112,220,255,0.22), rgba(255,196,84,0.24));
+  filter: blur(38px);
+  mix-blend-mode: multiply;
   transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
