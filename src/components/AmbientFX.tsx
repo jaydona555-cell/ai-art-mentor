@@ -100,16 +100,114 @@ export default function AmbientFX() {
     []
   );
 
+  const bokeh = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        size: 40 + Math.random() * 150,
+        delay: Math.random() * 12,
+        duration: 16 + Math.random() * 20,
+        dx: (Math.random() - 0.5) * 160,
+        dy: -40 - Math.random() * 120,
+        opacity: 0.16 + Math.random() * 0.26,
+        color: palette[(i + 2) % palette.length],
+      })),
+    [palette]
+  );
+
+  const confetti = useMemo(
+    () =>
+      Array.from({ length: 30 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        w: 3 + Math.random() * 5,
+        h: 6 + Math.random() * 10,
+        delay: Math.random() * 16,
+        duration: 10 + Math.random() * 14,
+        drift: (Math.random() - 0.5) * 220,
+        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      })),
+    []
+  );
+
   if (!mounted || sensoryMode === "minimal") return null;
 
   const lite = sensoryMode === "reduced";
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[5] overflow-hidden" aria-hidden="true">
+      {/* Prismatic colour wash */}
+      {!lite && <div className="fx-wash" />}
+
       {/* Aurora orbs */}
       <div className="fx-aurora fx-aurora-a" />
       <div className="fx-aurora fx-aurora-b" />
       <div className="fx-aurora fx-aurora-c" />
+      {!lite && <div className="fx-aurora fx-aurora-d" />}
+      {!lite && <div className="fx-aurora fx-aurora-e" />}
+
+      {/* Silky colour ribbons */}
+      {!lite &&
+        RIBBONS.map((r, i) => (
+          <div
+            key={`ribbon-${i}`}
+            className="fx-ribbon"
+            style={
+              {
+                top: r.top,
+                backgroundImage: r.color,
+                animationDuration: `${r.dur}s`,
+                animationDelay: `${i * 3}s`,
+                "--fx-rot": `${r.rot}deg`,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+
+      {/* Bokeh colour orbs */}
+      {bokeh.slice(0, lite ? 6 : bokeh.length).map((b) => (
+        <span
+          key={`bokeh-${b.id}`}
+          className="fx-bokeh"
+          style={
+            {
+              left: `${b.left}%`,
+              top: `${b.top}%`,
+              width: b.size,
+              height: b.size,
+              animationDelay: `${b.delay}s`,
+              animationDuration: `${b.duration}s`,
+              "--fx-color": b.color,
+              "--fx-dx": `${b.dx}px`,
+              "--fx-dy": `${b.dy}px`,
+              "--fx-op": b.opacity,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+
+      {/* Glitter confetti */}
+      {!lite &&
+        confetti.map((c) => (
+          <span
+            key={`confetti-${c.id}`}
+            className="fx-confetti"
+            style={
+              {
+                left: `${c.left}%`,
+                width: c.w,
+                height: c.h,
+                animationDelay: `${c.delay}s`,
+                animationDuration: `${c.duration}s`,
+                "--fx-drift": `${c.drift}px`,
+                "--fx-color": c.color,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+
 
       {/* Diagonal light rays */}
       {!lite && (
