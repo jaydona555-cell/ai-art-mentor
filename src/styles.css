@@ -614,3 +614,27 @@
 .sensory-minimal .fx-rays {
   display: none !important;
 }
+
+.sensory-reduced .fx-confetti,
+.sensory-reduced .fx-wash,
+.sensory-minimal .fx-bokeh,
+.sensory-minimal .fx-ribbon,
+.sensory-minimal .fx-confetti,
+.sensory-minimal .fx-wash,
+.sensory-minimal .fx-cursor-glow {
+  display: none !important;
+}
+
+/* Animated rainbow gradient text */
+@keyframes fx-rainbow-shift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+@utility fx-rainbow-text {
+  background-image: linear-gradient(90deg, #C9A961, #D4A88E, #B89098, #8B9BA8, #6B9E7C, #C9A961);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: fx-rainbow-shift 9s linear infinite;
+}
