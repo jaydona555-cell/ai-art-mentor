@@ -270,9 +270,9 @@ export default function AmbientFX() {
       {/* Cursor-tracked bloom */}
       {!lite && <div ref={glowRef} className="fx-cursor-glow" />}
 
-      {/* Vignette + film grain */}
-      <div className="fx-vignette" />
+      {/* Film grain */}
       <div className="fx-grain" />
     </div>
+    </>
   );
 }
