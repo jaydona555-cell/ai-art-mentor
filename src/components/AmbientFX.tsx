@@ -74,11 +74,11 @@ export default function AmbientFX() {
 
   const sparks = useMemo<Spark[]>(
     () =>
-      Array.from({ length: 46 }, (_, i) => ({
+      Array.from({ length: 90 }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
         top: Math.random() * 100,
-        size: 2 + Math.random() * 7,
+        size: 3 + Math.random() * 11,
         delay: Math.random() * 9,
         duration: 3.5 + Math.random() * 6,
         color: palette[i % palette.length],
