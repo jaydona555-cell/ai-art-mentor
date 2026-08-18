@@ -521,7 +521,7 @@ function AppContent() {
               className="font-display text-4xl sm:text-5xl font-bold leading-tight mb-4"
             >
               <span className="text-deep-earth">Share your art.</span><br />
-              <span className="gradient-text-sunset">Receive master-level guidance.</span>
+              <span className="fx-rainbow-text">Receive master-level guidance.</span>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
