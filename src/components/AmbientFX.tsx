@@ -9,11 +9,20 @@ import { useSeason } from "@/context/SeasonContext";
  */
 
 const SEASON_SPARKS: Record<string, string[]> = {
-  SPRING: ["#F2D8E4", "#E8ECEF", "#C9A961", "#D6E3D8"],
-  SUMMER: ["#C9A961", "#7BA08C", "#F5E6B8", "#E8ECEF"],
-  AUTUMN: ["#C9A961", "#D4A88E", "#B89098", "#A88940"],
-  WINTER: ["#E8ECEF", "#BFD3E6", "#FFFFFF", "#8B97A4"],
+  SPRING: ["#FF8AA6", "#FFC454", "#58D6B6", "#BA84FF", "#70DCFF"],
+  SUMMER: ["#FFC454", "#FF8370", "#58D6B6", "#70DCFF", "#FF6FB5"],
+  AUTUMN: ["#FF9A3C", "#FFC454", "#FF6F61", "#BA84FF", "#F2D74E"],
+  WINTER: ["#70DCFF", "#A9C7FF", "#FFFFFF", "#BA84FF", "#58D6B6"],
 };
+
+const CONFETTI_COLORS = ["#FF8AA6", "#FFC454", "#58D6B6", "#BA84FF", "#70DCFF", "#FF8370"];
+
+const RIBBONS = [
+  { top: "8vh", rot: -10, dur: 28, color: "linear-gradient(90deg, rgba(255,196,84,0) 0%, rgba(255,196,84,0.55) 35%, rgba(255,138,166,0.5) 65%, rgba(255,138,166,0) 100%)" },
+  { top: "44vh", rot: 6, dur: 36, color: "linear-gradient(90deg, rgba(88,214,182,0) 0%, rgba(88,214,182,0.5) 40%, rgba(112,220,255,0.45) 70%, rgba(112,220,255,0) 100%)" },
+  { top: "76vh", rot: -6, dur: 44, color: "linear-gradient(90deg, rgba(186,132,255,0) 0%, rgba(186,132,255,0.5) 45%, rgba(255,138,166,0.42) 75%, rgba(255,138,166,0) 100%)" },
+];
+
 
 interface Spark {
   id: number;
