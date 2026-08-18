@@ -137,8 +137,11 @@ export default function AmbientFX() {
   const lite = sensoryMode === "reduced";
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[5] overflow-hidden" aria-hidden="true">
+    <>
+    {/* Colour layers sit behind the content so text stays crisp */}
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
       {/* Prismatic colour wash */}
+
       {!lite && <div className="fx-wash" />}
 
       {/* Aurora orbs */}
