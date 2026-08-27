@@ -204,7 +204,7 @@ async function handlePost({ request }: { request: Request }) {
           messages: [{ role: "user", content: prompt }],
           modalities: ["image", "text"],
         },
-        { models: IMAGE_MODELS },
+        { models: rotate(IMAGE_MODELS) },
       );
       if (!result.ok) return json({ error: result.message }, result.status);
 
