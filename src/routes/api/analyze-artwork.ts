@@ -254,7 +254,11 @@ async function handlePost({ request }: { request: Request }) {
         });
       }
 
-      const result = await callGateway({ messages, max_tokens: 2000 }, { escalateOnLength: true });
+      // Conversational follow-up: balanced pool, rotated per request.
+      const result = await callGateway(
+        { messages, max_tokens: 2000 },
+        { escalateOnLength: true, models: rotate(BALANCED_MODELS) },
+      );
       if (!result.ok) return json({ error: result.message }, result.status);
       const feedback = textOf(result.data).trim();
       if (!feedback) return json({ error: "No response received from the AI" }, 502);
