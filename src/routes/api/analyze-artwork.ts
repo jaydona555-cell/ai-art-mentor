@@ -274,16 +274,20 @@ async function handlePost({ request }: { request: Request }) {
     if (!imageBase64) return json({ error: "No image provided" }, 400);
 
     // Step 1: AI-generated art detection
-    const detection = await callGateway({
-      messages: [
-        { role: "system", content: AI_DETECTION_PROMPT },
-        imageMessage(
-          imageBase64,
-          mimeType,
-          "Analyze this image and determine if it is AI-generated. Respond with only the JSON object.",
-        ),
-      ],
-    });
+    const detection = await callGateway(
+      {
+        messages: [
+          { role: "system", content: AI_DETECTION_PROMPT },
+          imageMessage(
+            imageBase64,
+            mimeType,
+            "Analyze this image and determine if it is AI-generated. Respond with only the JSON object.",
+          ),
+        ],
+      },
+      // Simple classification: cheapest pool, rotated.
+      { models: rotate(LIGHT_MODELS) },
+    );
 
     if (detection.ok) {
       const match = textOf(detection.data).match(/\{[\s\S]*?\}/);
