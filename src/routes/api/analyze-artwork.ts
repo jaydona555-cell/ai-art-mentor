@@ -175,16 +175,20 @@ async function handlePost({ request }: { request: Request }) {
     // ---- Mode: Analyze style for masterpiece generation ----
     if (body.mode === "analyze-style") {
       if (!body.imageBase64) return json({ error: "No image provided" }, 400);
-      const result = await callGateway({
-        messages: [
-          { role: "system", content: MASTERPIECE_STYLE_PROMPT },
-          imageMessage(
-            body.imageBase64,
-            body.mimeType,
-            "Describe the distinctive style of this artwork.",
-          ),
-        ],
-      });
+      // Short descriptive task: cheapest pool first.
+      const result = await callGateway(
+        {
+          messages: [
+            { role: "system", content: MASTERPIECE_STYLE_PROMPT },
+            imageMessage(
+              body.imageBase64,
+              body.mimeType,
+              "Describe the distinctive style of this artwork.",
+            ),
+          ],
+        },
+        { models: rotate(LIGHT_MODELS) },
+      );
       if (!result.ok) return json({ error: result.message }, result.status);
       return json({
         styleDescription: textOf(result.data).trim() || "a beautiful artistic masterpiece",
