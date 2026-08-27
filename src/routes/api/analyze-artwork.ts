@@ -325,7 +325,8 @@ async function handlePost({ request }: { request: Request }) {
           response_format: { type: "json_object" },
           max_tokens: 4000,
         },
-        { escalateOnLength: true, models: attempt === 0 ? TEXT_MODELS : TEXT_MODELS.slice(1) },
+        // Heavy multimodal critique: rotate through the strong pool, escalating on truncation.
+        { escalateOnLength: true, models: rotate(HEAVY_MODELS) },
       );
       if (!analysis.ok) return json({ error: analysis.message }, analysis.status);
 
