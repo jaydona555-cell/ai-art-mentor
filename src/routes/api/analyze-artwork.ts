@@ -13,16 +13,36 @@ import {
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 /**
- * Ordered model chain. If a model is rate limited, errors, or truncates its answer
- * because it hit its token ceiling, we automatically escalate to the next, larger
- * model while sending the exact same conversation — so context is preserved.
+ * Model pools per task tier. Each request starts at a rotating offset inside its
+ * pool so usage is spread across models instead of hammering a single one, and
+ * escalates through the remaining entries on rate limits, errors or truncation.
  */
-const TEXT_MODELS = [
+const LIGHT_MODELS = [
+  "google/gemini-3.1-flash-lite",
+  "google/gemini-3.7-flash",
   "google/gemini-3.5-flash",
+];
+const BALANCED_MODELS = [
+  "google/gemini-3.7-flash",
+  "google/gemini-3.5-flash",
+  "google/gemini-3.1-flash-lite",
+  "google/gemini-3.1-pro-preview",
+];
+const HEAVY_MODELS = [
+  "google/gemini-3.7-flash",
   "google/gemini-3.1-pro-preview",
   "google/gemini-2.5-pro",
+  "google/gemini-3.5-flash",
 ];
 const IMAGE_MODELS = ["google/gemini-3.1-flash-image", "google/gemini-3-pro-image"];
+
+/** Round-robin cursor so consecutive requests start on different models. */
+let rotationCursor = 0;
+function rotate(pool: string[]): string[] {
+  const offset = rotationCursor++ % pool.length;
+  return [...pool.slice(offset), ...pool.slice(0, offset)];
+}
+
 
 type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -90,7 +110,7 @@ async function callGateway(
   body: Record<string, unknown>,
   options: { models?: string[]; escalateOnLength?: boolean } = {},
 ): Promise<GatewayResult> {
-  const models = options.models ?? TEXT_MODELS;
+  const models = options.models ?? rotate(BALANCED_MODELS);
   let last: GatewayResult = { ok: false, status: 502, message: "AI request failed." };
 
   for (let i = 0; i < models.length; i++) {
@@ -155,16 +175,20 @@ async function handlePost({ request }: { request: Request }) {
     // ---- Mode: Analyze style for masterpiece generation ----
     if (body.mode === "analyze-style") {
       if (!body.imageBase64) return json({ error: "No image provided" }, 400);
-      const result = await callGateway({
-        messages: [
-          { role: "system", content: MASTERPIECE_STYLE_PROMPT },
-          imageMessage(
-            body.imageBase64,
-            body.mimeType,
-            "Describe the distinctive style of this artwork.",
-          ),
-        ],
-      });
+      // Short descriptive task: cheapest pool first.
+      const result = await callGateway(
+        {
+          messages: [
+            { role: "system", content: MASTERPIECE_STYLE_PROMPT },
+            imageMessage(
+              body.imageBase64,
+              body.mimeType,
+              "Describe the distinctive style of this artwork.",
+            ),
+          ],
+        },
+        { models: rotate(LIGHT_MODELS) },
+      );
       if (!result.ok) return json({ error: result.message }, result.status);
       return json({
         styleDescription: textOf(result.data).trim() || "a beautiful artistic masterpiece",
@@ -180,7 +204,7 @@ async function handlePost({ request }: { request: Request }) {
           messages: [{ role: "user", content: prompt }],
           modalities: ["image", "text"],
         },
-        { models: IMAGE_MODELS },
+        { models: rotate(IMAGE_MODELS) },
       );
       if (!result.ok) return json({ error: result.message }, result.status);
 
@@ -234,7 +258,11 @@ async function handlePost({ request }: { request: Request }) {
         });
       }
 
-      const result = await callGateway({ messages, max_tokens: 2000 }, { escalateOnLength: true });
+      // Conversational follow-up: balanced pool, rotated per request.
+      const result = await callGateway(
+        { messages, max_tokens: 2000 },
+        { escalateOnLength: true, models: rotate(BALANCED_MODELS) },
+      );
       if (!result.ok) return json({ error: result.message }, result.status);
       const feedback = textOf(result.data).trim();
       if (!feedback) return json({ error: "No response received from the AI" }, 502);
@@ -246,16 +274,20 @@ async function handlePost({ request }: { request: Request }) {
     if (!imageBase64) return json({ error: "No image provided" }, 400);
 
     // Step 1: AI-generated art detection
-    const detection = await callGateway({
-      messages: [
-        { role: "system", content: AI_DETECTION_PROMPT },
-        imageMessage(
-          imageBase64,
-          mimeType,
-          "Analyze this image and determine if it is AI-generated. Respond with only the JSON object.",
-        ),
-      ],
-    });
+    const detection = await callGateway(
+      {
+        messages: [
+          { role: "system", content: AI_DETECTION_PROMPT },
+          imageMessage(
+            imageBase64,
+            mimeType,
+            "Analyze this image and determine if it is AI-generated. Respond with only the JSON object.",
+          ),
+        ],
+      },
+      // Simple classification: cheapest pool, rotated.
+      { models: rotate(LIGHT_MODELS) },
+    );
 
     if (detection.ok) {
       const match = textOf(detection.data).match(/\{[\s\S]*?\}/);
@@ -305,7 +337,8 @@ async function handlePost({ request }: { request: Request }) {
           response_format: { type: "json_object" },
           max_tokens: 4000,
         },
-        { escalateOnLength: true, models: attempt === 0 ? TEXT_MODELS : TEXT_MODELS.slice(1) },
+        // Heavy multimodal critique: rotate through the strong pool, escalating on truncation.
+        { escalateOnLength: true, models: rotate(HEAVY_MODELS) },
       );
       if (!analysis.ok) return json({ error: analysis.message }, analysis.status);
 
