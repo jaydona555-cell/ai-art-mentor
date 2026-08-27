@@ -13,16 +13,36 @@ import {
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 /**
- * Ordered model chain. If a model is rate limited, errors, or truncates its answer
- * because it hit its token ceiling, we automatically escalate to the next, larger
- * model while sending the exact same conversation — so context is preserved.
+ * Model pools per task tier. Each request starts at a rotating offset inside its
+ * pool so usage is spread across models instead of hammering a single one, and
+ * escalates through the remaining entries on rate limits, errors or truncation.
  */
-const TEXT_MODELS = [
+const LIGHT_MODELS = [
+  "google/gemini-3.1-flash-lite",
+  "google/gemini-3.7-flash",
   "google/gemini-3.5-flash",
+];
+const BALANCED_MODELS = [
+  "google/gemini-3.7-flash",
+  "google/gemini-3.5-flash",
+  "google/gemini-3.1-flash-lite",
+  "google/gemini-3.1-pro-preview",
+];
+const HEAVY_MODELS = [
+  "google/gemini-3.7-flash",
   "google/gemini-3.1-pro-preview",
   "google/gemini-2.5-pro",
+  "google/gemini-3.5-flash",
 ];
 const IMAGE_MODELS = ["google/gemini-3.1-flash-image", "google/gemini-3-pro-image"];
+
+/** Round-robin cursor so consecutive requests start on different models. */
+let rotationCursor = 0;
+function rotate(pool: string[]): string[] {
+  const offset = rotationCursor++ % pool.length;
+  return [...pool.slice(offset), ...pool.slice(0, offset)];
+}
+
 
 type ChatMessage = {
   role: "system" | "user" | "assistant";
