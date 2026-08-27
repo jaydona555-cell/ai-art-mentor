@@ -110,7 +110,7 @@ async function callGateway(
   body: Record<string, unknown>,
   options: { models?: string[]; escalateOnLength?: boolean } = {},
 ): Promise<GatewayResult> {
-  const models = options.models ?? TEXT_MODELS;
+  const models = options.models ?? rotate(BALANCED_MODELS);
   let last: GatewayResult = { ok: false, status: 502, message: "AI request failed." };
 
   for (let i = 0; i < models.length; i++) {
